@@ -8,10 +8,11 @@ from subprocess import run
 from os.path import dirname, join
 from sys import executable
 from platform import system
+from security import safe_command
 
 root_dir = dirname(__file__)
 
 requirements_file = ('requirements-win32.txt' if system() == 'Windows' else 'requirements.txt')
 
-run([executable, '-m', 'pip', 'install', '-r', join(root_dir, requirements_file)])
+safe_command.run(run, [executable, '-m', 'pip', 'install', '-r', join(root_dir, requirements_file)])
 input('Press enter to close')
