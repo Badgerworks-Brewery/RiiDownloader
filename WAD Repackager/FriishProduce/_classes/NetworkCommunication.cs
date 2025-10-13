@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -13,6 +14,41 @@ using System.Windows.Forms;
 
 namespace FriishProduce
 {
+    /// <summary>
+    /// Exception thrown when network communication with a device fails
+    /// </summary>
+    public class NetworkCommunicationException : Exception
+    {
+        public NetworkCommunicationException(string message) : base(message) { }
+        public NetworkCommunicationException(string message, Exception innerException) : base(message, innerException) { }
+    }
+
+    /// <summary>
+    /// Exception thrown when device connection fails
+    /// </summary>
+    public class DeviceConnectionException : Exception
+    {
+        public DeviceConnectionException(string message) : base(message) { }
+        public DeviceConnectionException(string message, Exception innerException) : base(message, innerException) { }
+    }
+
+    /// <summary>
+    /// Exception thrown when file extraction operations fail
+    /// </summary>
+    public class ExtractionException : Exception
+    {
+        public ExtractionException(string message) : base(message) { }
+        public ExtractionException(string message, Exception innerException) : base(message, innerException) { }
+    }
+
+    /// <summary>
+    /// Exception thrown when file download operations fail
+    /// </summary>
+    public class DownloadException : Exception
+    {
+        public DownloadException(string message) : base(message) { }
+        public DownloadException(string message, Exception innerException) : base(message, innerException) { }
+    }
     /// <summary>
     /// Represents a discovered NXDump device on the network
     /// </summary>
@@ -24,7 +60,7 @@ namespace FriishProduce
         public string Version { get; set; }
         public DateTime LastSeen { get; set; }
         
-        public string BaseUrl => $"http://{IPAddress}:{Port}";
+        public string BaseUrl => $"https://{IPAddress}:{Port}";
     }
 
     /// <summary>
@@ -71,7 +107,6 @@ namespace FriishProduce
         
         public event EventHandler<NXDumpDevice> DeviceDiscovered;
         public event EventHandler<NXDumpDevice> DeviceLost;
-        public event EventHandler<TransferStatus> TransferProgressUpdated;
 
         public NetworkCommunication()
         {
@@ -110,9 +145,17 @@ namespace FriishProduce
         }
 
         /// <summary>
-        /// Manually add a device by IP address
+        /// Manually add a device by IP address using default port
         /// </summary>
-        public async Task<NXDumpDevice> AddDeviceManually(string ipAddress, int port = DEFAULT_NXDUMP_PORT)
+        public async Task<NXDumpDevice> AddDeviceManually(string ipAddress)
+        {
+            return await AddDeviceManually(ipAddress, DEFAULT_NXDUMP_PORT);
+        }
+
+        /// <summary>
+        /// Manually add a device by IP address and port
+        /// </summary>
+        public async Task<NXDumpDevice> AddDeviceManually(string ipAddress, int port)
         {
             try
             {
@@ -146,7 +189,7 @@ namespace FriishProduce
             }
             catch (Exception ex)
             {
-                throw new Exception($"Failed to connect to device at {ipAddress}:{port} - {ex.Message}");
+                throw new DeviceConnectionException($"Failed to connect to device at {ipAddress}:{port} - {ex.Message}", ex);
             }
             
             return null;
@@ -180,14 +223,22 @@ namespace FriishProduce
             }
             catch (Exception ex)
             {
-                throw new Exception($"Failed to get titles from device: {ex.Message}");
+                throw new NetworkCommunicationException($"Failed to get titles from device: {ex.Message}", ex);
             }
         }
 
         /// <summary>
-        /// Request extraction of a specific game title
+        /// Request extraction of a specific game title using default NSP format
         /// </summary>
-        public async Task<string> RequestExtraction(NXDumpDevice device, GameTitle title, string outputFormat = "nsp")
+        public async Task<string> RequestExtraction(NXDumpDevice device, GameTitle title)
+        {
+            return await RequestExtraction(device, title, "nsp");
+        }
+
+        /// <summary>
+        /// Request extraction of a specific game title with specified format
+        /// </summary>
+        public async Task<string> RequestExtraction(NXDumpDevice device, GameTitle title, string outputFormat)
         {
             try
             {
@@ -210,7 +261,7 @@ namespace FriishProduce
             }
             catch (Exception ex)
             {
-                throw new Exception($"Failed to request extraction: {ex.Message}");
+                throw new ExtractionException($"Failed to request extraction: {ex.Message}", ex);
             }
         }
 
@@ -226,14 +277,22 @@ namespace FriishProduce
             }
             catch (Exception ex)
             {
-                throw new Exception($"Failed to get extraction status: {ex.Message}");
+                throw new ExtractionException($"Failed to get extraction status: {ex.Message}", ex);
             }
         }
 
         /// <summary>
-        /// Download an extracted file from the device
+        /// Download an extracted file from the device without progress reporting
         /// </summary>
-        public async Task<Stream> DownloadExtractedFile(NXDumpDevice device, string operationId, IProgress<long> progress = null)
+        public async Task<Stream> DownloadExtractedFile(NXDumpDevice device, string operationId)
+        {
+            return await DownloadExtractedFile(device, operationId, null);
+        }
+
+        /// <summary>
+        /// Download an extracted file from the device with progress reporting
+        /// </summary>
+        public async Task<Stream> DownloadExtractedFile(NXDumpDevice device, string operationId, IProgress<long> progress)
         {
             try
             {
@@ -252,7 +311,7 @@ namespace FriishProduce
             }
             catch (Exception ex)
             {
-                throw new Exception($"Failed to download file: {ex.Message}");
+                throw new DownloadException($"Failed to download file: {ex.Message}", ex);
             }
         }
 
@@ -261,7 +320,10 @@ namespace FriishProduce
         /// </summary>
         private void PerformDiscovery(object state)
         {
-            if (discoveryClient == null) return;
+            if (discoveryClient == null)
+            {
+                return;
+            }
             
             try
             {
@@ -292,7 +354,10 @@ namespace FriishProduce
         /// </summary>
         private async Task ListenForDiscoveryResponses()
         {
-            if (discoveryClient == null) return;
+            if (discoveryClient == null)
+            {
+                return;
+            }
             
             while (true)
             {

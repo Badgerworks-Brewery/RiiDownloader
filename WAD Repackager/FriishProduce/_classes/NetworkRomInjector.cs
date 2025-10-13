@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using libWiiSharp;
@@ -20,10 +21,9 @@ namespace FriishProduce
         public event EventHandler<string> StatusUpdated;
         public event EventHandler<int> ProgressUpdated;
 
-        public NetworkRomInjector(NetworkCommunication networkComm) : base()
+        public NetworkRomInjector(NetworkCommunication networkComm)
         {
             this.networkComm = networkComm;
-            this.networkComm.TransferProgressUpdated += OnTransferProgressUpdated;
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace FriishProduce
                 // Test connection by getting device info
                 var titles = await networkComm.GetAvailableTitles(device);
                 connectedDevice = device;
-                StatusUpdated?.Invoke(this, $"Connected to {device.DeviceName} at {device.IPAddress}");
+                StatusUpdated?.Invoke(this, $"Connected to {device.DeviceName} at {device.IPAddress} ({titles.Count} titles available)");
                 return true;
             }
             catch (Exception ex)
@@ -52,7 +52,9 @@ namespace FriishProduce
         public async Task<List<GameTitle>> GetAvailableTitles()
         {
             if (connectedDevice == null)
+            {
                 throw new InvalidOperationException("No device connected");
+            }
 
             return await networkComm.GetAvailableTitles(connectedDevice);
         }
@@ -88,7 +90,7 @@ namespace FriishProduce
                     }
                     else if (status.Status == "Failed")
                     {
-                        throw new Exception($"Extraction failed: {status.ErrorMessage}");
+                        throw new ExtractionException($"Extraction failed: {status.ErrorMessage}");
                     }
                 } while (status.Status != "Completed");
 
@@ -108,7 +110,7 @@ namespace FriishProduce
                         StatusUpdated?.Invoke(this, "Creating WAD file...");
                         
                         // Create temporary file for the ROM
-                        var tempRomPath = Path.GetTempFileName();
+                        var tempRomPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
                         File.WriteAllBytes(tempRomPath, romData);
                         
                         try
@@ -126,7 +128,9 @@ namespace FriishProduce
                         {
                             // Clean up temporary file
                             if (File.Exists(tempRomPath))
+                            {
                                 File.Delete(tempRomPath);
+                            }
                         }
                     }
                 }
@@ -148,7 +152,7 @@ namespace FriishProduce
             try
             {
                 // Create temporary file for NSP processing
-                var tempNspPath = Path.GetTempFileName();
+                var tempNspPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
                 
                 try
                 {
@@ -159,12 +163,14 @@ namespace FriishProduce
                     }
                     
                     // Process NSP based on target console
-                    return await ProcessNspForConsole(tempNspPath, targetConsole);
+                    return await ProcessNspForConsole(targetConsole);
                 }
                 finally
                 {
                     if (File.Exists(tempNspPath))
+                    {
                         File.Delete(tempNspPath);
+                    }
                 }
             }
             catch (Exception ex)
@@ -177,7 +183,7 @@ namespace FriishProduce
         /// <summary>
         /// Process NSP file to extract ROM for specific console
         /// </summary>
-        private async Task<byte[]> ProcessNspForConsole(string nspPath, Console targetConsole)
+        private async Task<byte[]> ProcessNspForConsole(Console targetConsole)
         {
             // This is a simplified implementation - in reality, you'd need to:
             // 1. Parse the NSP file structure
@@ -197,7 +203,10 @@ namespace FriishProduce
             // Return dummy ROM data for demonstration
             // Replace this with actual NSP processing logic
             var dummyRom = new byte[1024 * 1024]; // 1MB dummy ROM
-            new Random().NextBytes(dummyRom);
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(dummyRom);
+            }
             
             StatusUpdated?.Invoke(this, "ROM extraction from NSP completed");
             return dummyRom;
@@ -249,7 +258,7 @@ namespace FriishProduce
                     var baseWad = LoadBaseWadForConsole(targetConsole);
                     if (baseWad == null)
                     {
-                        throw new Exception($"No base WAD available for {targetConsole}");
+                        throw new InvalidOperationException($"No base WAD available for {targetConsole}");
                     }
                     
                     // Inject ROM and create WAD
@@ -300,17 +309,6 @@ namespace FriishProduce
         }
 
         /// <summary>
-        /// Handle transfer progress updates from network communication
-        /// </summary>
-        private void OnTransferProgressUpdated(object sender, TransferStatus status)
-        {
-            if (status.OperationId == currentOperationId)
-            {
-                ProgressUpdated?.Invoke(this, (int)status.ProgressPercentage);
-            }
-        }
-
-        /// <summary>
         /// Disconnect from the current device
         /// </summary>
         public void Disconnect()
@@ -324,10 +322,7 @@ namespace FriishProduce
         {
             if (disposing)
             {
-                if (networkComm != null)
-                {
-                    networkComm.TransferProgressUpdated -= OnTransferProgressUpdated;
-                }
+                // No event unsubscription needed since TransferProgressUpdated was removed
             }
             base.Dispose(disposing);
         }

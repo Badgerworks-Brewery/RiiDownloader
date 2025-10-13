@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace FriishProduce
 {
-    public partial class AddDeviceDialog : Form
+    public class AddDeviceDialog : Form
     {
         public string IPAddress { get; private set; }
         public int Port { get; private set; }
@@ -65,12 +65,12 @@ namespace FriishProduce
             // numericUpDownPort
             // 
             this.numericUpDownPort.Location = new System.Drawing.Point(79, 39);
-            this.numericUpDownPort.Maximum = new decimal(new int[] { 65535, 0, 0, 0 });
-            this.numericUpDownPort.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            this.numericUpDownPort.Maximum = new decimal(65535);
+            this.numericUpDownPort.Minimum = new decimal(1);
             this.numericUpDownPort.Name = "numericUpDownPort";
             this.numericUpDownPort.Size = new System.Drawing.Size(120, 20);
             this.numericUpDownPort.TabIndex = 3;
-            this.numericUpDownPort.Value = new decimal(new int[] { 8080, 0, 0, 0 });
+            this.numericUpDownPort.Value = new decimal(8080);
             
             // 
             // buttonOK
@@ -82,7 +82,7 @@ namespace FriishProduce
             this.buttonOK.TabIndex = 4;
             this.buttonOK.Text = "OK";
             this.buttonOK.UseVisualStyleBackColor = true;
-            this.buttonOK.Click += new System.EventHandler(this.ButtonOK_Click);
+            this.buttonOK.Click += this.ButtonOK_Click;
             
             // 
             // buttonCancel
