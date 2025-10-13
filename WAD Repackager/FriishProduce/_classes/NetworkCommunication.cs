@@ -49,7 +49,6 @@ namespace FriishProduce
         public DownloadException(string message) : base(message) { }
         public DownloadException(string message, Exception innerException) : base(message, innerException) { }
     }
-
     /// <summary>
     /// Represents a discovered NXDump device on the network
     /// </summary>

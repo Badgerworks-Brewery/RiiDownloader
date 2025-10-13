@@ -187,7 +187,10 @@ namespace FriishProduce
 
         private async void ButtonExtractAndInject_Click(object sender, EventArgs e)
         {
-            if (selectedTitle == null || comboBoxConsole.SelectedItem == null) return;
+            if (selectedTitle == null || comboBoxConsole.SelectedItem == null)
+            {
+                return;
+            }
 
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
@@ -326,7 +329,10 @@ namespace FriishProduce
 
         private async Task RefreshTitlesList()
         {
-            if (selectedDevice == null) return;
+            if (selectedDevice == null)
+            {
+                return;
+            }
 
             try
             {
