@@ -322,10 +322,7 @@ namespace FriishProduce
         {
             if (disposing)
             {
-                if (networkComm != null)
-                {
-                    networkComm.TransferProgressUpdated -= OnTransferProgressUpdated;
-                }
+                // No event unsubscription needed since TransferProgressUpdated was removed
             }
             base.Dispose(disposing);
         }

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace FriishProduce
 {
-    public partial class NetworkIntegrationForm : Form
+    public class NetworkIntegrationForm : Form
     {
         private NetworkCommunication networkComm;
         private NetworkRomInjector romInjector;
@@ -152,7 +152,10 @@ namespace FriishProduce
 
         private async void ButtonConnect_Click(object sender, EventArgs e)
         {
-            if (selectedDevice == null) return;
+            if (selectedDevice == null)
+            {
+                return;
+            }
 
             try
             {
