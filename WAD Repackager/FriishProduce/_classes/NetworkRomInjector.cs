@@ -298,7 +298,7 @@ namespace FriishProduce
                     throw new NotImplementedException(
                         "WAD injection requires base WAD files for each console type. " +
                         "These files must be obtained separately and configured in the application. " +
-                        "Please refer to the documentation for setup instructions.");
+                        "See IMPLEMENTATION_SUMMARY.md for setup instructions and requirements.");
                 }
             }
             catch (NotImplementedException)
