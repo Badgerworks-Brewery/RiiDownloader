@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using libWiiSharp;
+using FriishProduce.WiiVC;
 
 namespace FriishProduce
 {
@@ -271,16 +272,16 @@ namespace FriishProduce
                 switch (targetConsole)
                 {
                     case Console.NES:
-                        injector = new WiiVC.NES();
+                        injector = new NES();
                         break;
                     case Console.SNES:
-                        injector = new WiiVC.SNES();
+                        injector = new SNES();
                         break;
                     case Console.N64:
-                        injector = new WiiVC.N64();
+                        injector = new N64();
                         break;
                     case Console.SMDGEN:
-                        injector = new WiiVC.SEGA();
+                        injector = new SEGA();
                         break;
                     default:
                         throw new NotSupportedException($"Console {targetConsole} is not supported yet");
@@ -292,18 +293,18 @@ namespace FriishProduce
                     // 1. A base WAD file for the console type
                     // 2. Proper ROM format validation
                     // 3. Console-specific injection logic
-                    // This is a placeholder showing the integration point
                     
-                    StatusUpdated?.Invoke(this, "Note: Complete WAD injection requires base WAD files and proper setup");
-                    
-                    // TODO: Complete the integration with actual WAD creation
-                    // The injector classes exist and work, but need:
-                    // - Base WAD files for each console
-                    // - Proper ROM data (not dummy data)
-                    // - Full InjectorForm integration
-                    
-                    return false; // Return false for now to indicate incomplete implementation
+                    StatusUpdated?.Invoke(this, "Error: Base WAD files are required but not available");
+                    throw new NotImplementedException(
+                        "WAD injection requires base WAD files for each console type. " +
+                        "These files must be obtained separately and configured in the application. " +
+                        "Please refer to the documentation for setup instructions.");
                 }
+            }
+            catch (NotImplementedException)
+            {
+                // Re-throw NotImplementedException so caller knows this is a missing feature
+                throw;
             }
             catch (Exception ex)
             {

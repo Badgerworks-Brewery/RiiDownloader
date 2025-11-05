@@ -207,10 +207,10 @@ namespace FriishProduce
             // 
             // NetworkIntegration
             // 
-            this.NetworkIntegration.Image = global::FriishProduce.Properties.Resources.server_network;
-            this.NetworkIntegration.LargeImage = global::FriishProduce.Properties.Resources.server_network_large;
+            this.NetworkIntegration.Image = global::FriishProduce.Properties.Resources.arrow_circle_double;
+            this.NetworkIntegration.LargeImage = global::FriishProduce.Properties.Resources.arrow_circle_double;
             this.NetworkIntegration.Name = "NetworkIntegration";
-            this.NetworkIntegration.SmallImage = global::FriishProduce.Properties.Resources.server_network;
+            this.NetworkIntegration.SmallImage = global::FriishProduce.Properties.Resources.arrow_circle_double;
             this.NetworkIntegration.Text = "NXDump Network";
             this.NetworkIntegration.ToolTip = "Connect to NXDump device on network";
             this.NetworkIntegration.Click += new System.EventHandler(this.NetworkIntegration_Click);
