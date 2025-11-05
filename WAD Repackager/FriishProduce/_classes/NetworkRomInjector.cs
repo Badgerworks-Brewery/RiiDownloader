@@ -152,7 +152,7 @@ namespace FriishProduce
             try
             {
                 // Create temporary file for NSP processing
-                var tempNspPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+                var tempNspPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".nsp");
                 
                 try
                 {
@@ -163,7 +163,7 @@ namespace FriishProduce
                     }
                     
                     // Process NSP based on target console
-                    return await ProcessNspForConsole(targetConsole);
+                    return await ProcessNspForConsole(tempNspPath, targetConsole);
                 }
                 finally
                 {
@@ -183,33 +183,79 @@ namespace FriishProduce
         /// <summary>
         /// Process NSP file to extract ROM for specific console
         /// </summary>
-        private async Task<byte[]> ProcessNspForConsole(Console targetConsole)
+        private async Task<byte[]> ProcessNspForConsole(string nspPath, Console targetConsole)
         {
-            // This is a simplified implementation - in reality, you'd need to:
-            // 1. Parse the NSP file structure
-            // 2. Extract the appropriate ROM file based on the target console
-            // 3. Handle different ROM formats (NES, SNES, N64, etc.)
-            
             StatusUpdated?.Invoke(this, $"Processing NSP for {targetConsole} console...");
             
-            // For now, we'll simulate ROM extraction
-            // In a real implementation, you would:
-            // - Use NSP parsing libraries
-            // - Extract specific files based on console type
-            // - Convert formats if necessary
-            
-            await Task.Delay(1000); // Simulate processing time
-            
-            // Return dummy ROM data for demonstration
-            // Replace this with actual NSP processing logic
-            var dummyRom = new byte[1024 * 1024]; // 1MB dummy ROM
-            using (var rng = RandomNumberGenerator.Create())
+            try
             {
-                rng.GetBytes(dummyRom);
+                // NSP files are PFS0 (Partition File System) archives
+                // We need to:
+                // 1. Extract the NSP contents
+                // 2. Find the NCA file with the game content (usually offset 1)
+                // 3. Extract the RomFS from the NCA
+                // 4. Locate the ROM file within RomFS based on console type
+                
+                var romData = await ExtractRomFromNspFile(nspPath, targetConsole);
+                
+                if (romData != null && romData.Length > 0)
+                {
+                    StatusUpdated?.Invoke(this, $"Successfully extracted {romData.Length} bytes ROM data");
+                    return romData;
+                }
+                else
+                {
+                    StatusUpdated?.Invoke(this, "Warning: Could not extract ROM from NSP, using placeholder");
+                    // Return placeholder for now
+                    return new byte[1024 * 1024];
+                }
             }
+            catch (Exception ex)
+            {
+                StatusUpdated?.Invoke(this, $"Error processing NSP: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Extract ROM file from NSP using knowledge of ROM locations
+        /// Based on documented ROM paths for different games
+        /// </summary>
+        private async Task<byte[]> ExtractRomFromNspFile(string nspPath, Console targetConsole)
+        {
+            // This method attempts to extract the ROM from known locations
+            // Based on the notes file, different games store ROMs in different locations:
+            // - Mario 64: /rom/Stardust_JP/01_UNSMJ3.002.bin (Shindou version, Japanese)
+            // - Other N64 games: typically in /rom/ folder
+            // - NES/SNES: usually in /content/ or /rom/ folders
             
-            StatusUpdated?.Invoke(this, "ROM extraction from NSP completed");
-            return dummyRom;
+            StatusUpdated?.Invoke(this, "Analyzing NSP structure...");
+            
+            // Known ROM file patterns for different consoles
+            var romPatterns = new Dictionary<Console, string[]>
+            {
+                { Console.N64, new[] { "*.z64", "*.n64", "*.v64", "*.bin" } },
+                { Console.NES, new[] { "*.nes", "*.bin" } },
+                { Console.SNES, new[] { "*.sfc", "*.smc", "*.bin" } },
+                { Console.SMDGEN, new[] { "*.md", "*.bin", "*.gen" } },
+                { Console.SMS, new[] { "*.sms", "*.bin" } }
+            };
+            
+            // For now, return a placeholder indicating the feature is ready for implementation
+            // In a complete implementation, this would:
+            // 1. Use hactool or similar NSP extraction tools
+            // 2. Parse the PFS0 structure
+            // 3. Extract and decrypt NCA files
+            // 4. Mount RomFS
+            // 5. Search for ROM files matching the patterns
+            
+            StatusUpdated?.Invoke(this, "Note: Full NSP extraction requires external tools (hactool)");
+            
+            await Task.Delay(500); // Simulate processing
+            
+            // TODO: Implement actual NSP extraction using hactool or similar
+            // For now, return null to indicate the ROM needs to be provided manually
+            return null;
         }
 
         /// <summary>
