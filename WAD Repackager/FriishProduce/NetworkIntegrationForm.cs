@@ -372,7 +372,14 @@ namespace FriishProduce
             groupBoxDevices.Enabled = enabled;
             groupBoxTitles.Enabled = enabled && selectedDevice != null;
             groupBoxConsole.Enabled = enabled && selectedTitle != null;
-            buttonExtractAndInject.Enabled = enabled && UpdateExtractButtonState();
+            if (enabled)
+            {
+                UpdateExtractButtonState();
+            }
+            else
+            {
+                buttonExtractAndInject.Enabled = false;
+            }
         }
 
         private string FormatFileSize(long bytes)

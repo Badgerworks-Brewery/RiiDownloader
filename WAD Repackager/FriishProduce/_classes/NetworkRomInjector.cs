@@ -271,16 +271,16 @@ namespace FriishProduce
                 switch (targetConsole)
                 {
                     case Console.NES:
-                        injector = new Injectors.NES();
+                        injector = new WiiVC.NES();
                         break;
                     case Console.SNES:
-                        injector = new Injectors.SNES();
+                        injector = new WiiVC.SNES();
                         break;
                     case Console.N64:
-                        injector = new Injectors.N64();
+                        injector = new WiiVC.N64();
                         break;
                     case Console.SMDGEN:
-                        injector = new Injectors.SEGA();
+                        injector = new WiiVC.SEGA();
                         break;
                     default:
                         throw new NotSupportedException($"Console {targetConsole} is not supported yet");
@@ -288,34 +288,21 @@ namespace FriishProduce
                 
                 if (injector != null)
                 {
-                    // Configure injector with ROM file
-                    injector.ROM = File.ReadAllBytes(romPath);
+                    // Note: The actual ROM injection is complex and requires:
+                    // 1. A base WAD file for the console type
+                    // 2. Proper ROM format validation
+                    // 3. Console-specific injection logic
+                    // This is a placeholder showing the integration point
                     
-                    // Set up WAD creation parameters
-                    var creator = new Creator(targetConsole);
-                    creator.TitleID = GenerateTitleId(gameInfo);
-                    creator.ChannelTitles = new[] { gameInfo.Name, gameInfo.Name, gameInfo.Name, gameInfo.Name };
-                    creator.BannerTitle = gameInfo.Name;
-                    creator.BannerYear = DateTime.Now.Year;
-                    creator.BannerPlayers = 1;
-                    creator.Out = outputPath;
+                    StatusUpdated?.Invoke(this, "Note: Complete WAD injection requires base WAD files and proper setup");
                     
-                    // Create base WAD (this would need to be loaded from resources)
-                    var baseWad = LoadBaseWadForConsole(targetConsole);
-                    if (baseWad == null)
-                    {
-                        throw new InvalidOperationException($"No base WAD available for {targetConsole}");
-                    }
+                    // TODO: Complete the integration with actual WAD creation
+                    // The injector classes exist and work, but need:
+                    // - Base WAD files for each console
+                    // - Proper ROM data (not dummy data)
+                    // - Full InjectorForm integration
                     
-                    // Inject ROM and create WAD
-                    await Task.Run(() =>
-                    {
-                        injector.WAD = baseWad;
-                        injector.Inject();
-                        creator.MakeWAD(injector.WAD, new TitleImage());
-                    });
-                    
-                    return true;
+                    return false; // Return false for now to indicate incomplete implementation
                 }
             }
             catch (Exception ex)
@@ -371,51 +358,6 @@ namespace FriishProduce
                 // No event unsubscription needed since TransferProgressUpdated was removed
             }
             base.Dispose(disposing);
-        }
-    }
-
-    /// <summary>
-    /// Namespace for console-specific injectors
-    /// </summary>
-    namespace Injectors
-    {
-        // These would be implementations of the existing injector classes
-        // but adapted to work with the network ROM injector
-        
-        public class NES : InjectorWiiVC
-        {
-            public void Inject()
-            {
-                // NES-specific injection logic
-                // This would be based on the existing NES.cs implementation
-            }
-        }
-        
-        public class SNES : InjectorWiiVC
-        {
-            public void Inject()
-            {
-                // SNES-specific injection logic
-                // This would be based on the existing SNES.cs implementation
-            }
-        }
-        
-        public class N64 : InjectorWiiVC
-        {
-            public void Inject()
-            {
-                // N64-specific injection logic
-                // This would be based on the existing N64.cs implementation
-            }
-        }
-        
-        public class SEGA : InjectorWiiVC
-        {
-            public void Inject()
-            {
-                // SEGA-specific injection logic
-                // This would be based on the existing SEGA.cs implementation
-            }
         }
     }
 }
