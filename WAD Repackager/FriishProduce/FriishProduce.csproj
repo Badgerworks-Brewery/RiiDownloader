@@ -236,6 +236,9 @@
     <Compile Include="NetworkIntegrationForm.Designer.cs">
       <DependentUpon>NetworkIntegrationForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="NetworkIntegrationForm.resx">
+      <DependentUpon>NetworkIntegrationForm.cs</DependentUpon>
+    </EmbeddedResource>
     <Compile Include="AddDeviceDialog.cs">
       <SubType>Form</SubType>
     </Compile>

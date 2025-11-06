@@ -352,13 +352,23 @@ namespace FriishProduce
             StatusUpdated?.Invoke(this, "Disconnected from device");
         }
 
-        protected override void Dispose(bool disposing)
+        // Abstract method implementations required by InjectorWiiVC base class
+        protected override void ReplaceROM()
         {
-            if (disposing)
-            {
-                // No event unsubscription needed since TransferProgressUpdated was removed
-            }
-            base.Dispose(disposing);
+            // This is handled by the ExtractAndInjectROM method
+            // Left empty as it's called by the base class workflow
+        }
+
+        protected override void ReplaceSaveData(string[] lines, TitleImage tImg)
+        {
+            // Network injector doesn't support save data replacement yet
+            // Future enhancement: could support downloading save data from NXDump
+        }
+
+        protected override void ModifyEmulatorSettings()
+        {
+            // Emulator settings modification is handled by base WiiVC injector classes
+            // This is called as part of the injection workflow
         }
     }
 }

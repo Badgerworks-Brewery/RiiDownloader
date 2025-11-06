@@ -394,21 +394,6 @@ namespace FriishProduce
             }
             return $"{len:0.##} {sizes[order]}";
         }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (components != null)
-                {
-                    components.Dispose();
-                }
-                
-                romInjector?.Dispose();
-                networkComm?.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 
     /// <summary>
