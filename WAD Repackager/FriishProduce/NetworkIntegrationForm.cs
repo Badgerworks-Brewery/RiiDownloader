@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace FriishProduce
 {
-    public class NetworkIntegrationForm : Form
+    public partial class NetworkIntegrationForm : Form
     {
         private NetworkCommunication networkComm;
         private NetworkRomInjector romInjector;
