@@ -228,6 +228,17 @@
     <Compile Include="_classes\Paths.cs" />
     <Compile Include="_classes\TitleImage.cs" />
     <Compile Include="_classes\Banner.cs" />
+    <Compile Include="_classes\NetworkCommunication.cs" />
+    <Compile Include="_classes\NetworkRomInjector.cs" />
+    <Compile Include="NetworkIntegrationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NetworkIntegrationForm.Designer.cs">
+      <DependentUpon>NetworkIntegrationForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddDeviceDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
