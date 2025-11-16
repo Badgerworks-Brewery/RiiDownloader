@@ -7,10 +7,9 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace FriishProduce
 {
@@ -96,7 +95,7 @@ namespace FriishProduce
     {
         private readonly HttpClient httpClient;
         private readonly UdpClient discoveryClient;
-        private readonly Timer discoveryTimer;
+        private readonly System.Threading.Timer discoveryTimer;
         private readonly List<NXDumpDevice> discoveredDevices;
         private readonly object devicesLock = new object();
         
@@ -203,7 +202,7 @@ namespace FriishProduce
             try
             {
                 var response = await httpClient.GetStringAsync($"{device.BaseUrl}/api/info");
-                return JsonSerializer.Deserialize<Dictionary<string, string>>(response);
+                return JsonConvert.DeserializeObject<Dictionary<string, string>>(response);
             }
             catch
             {
@@ -219,7 +218,7 @@ namespace FriishProduce
             try
             {
                 var response = await httpClient.GetStringAsync($"{device.BaseUrl}/api/titles");
-                return JsonSerializer.Deserialize<List<GameTitle>>(response);
+                return JsonConvert.DeserializeObject<List<GameTitle>>(response);
             }
             catch (Exception ex)
             {
@@ -250,13 +249,13 @@ namespace FriishProduce
                     includeDLC = false
                 };
 
-                var json = JsonSerializer.Serialize(requestData);
+                var json = JsonConvert.SerializeObject(requestData);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 
                 var response = await httpClient.PostAsync($"{device.BaseUrl}/api/extract", content);
                 response.EnsureSuccessStatusCode();
                 
-                var responseData = JsonSerializer.Deserialize<Dictionary<string, string>>(await response.Content.ReadAsStringAsync());
+                var responseData = JsonConvert.DeserializeObject<Dictionary<string, string>>(await response.Content.ReadAsStringAsync());
                 return responseData["operationId"];
             }
             catch (Exception ex)
@@ -273,7 +272,7 @@ namespace FriishProduce
             try
             {
                 var response = await httpClient.GetStringAsync($"{device.BaseUrl}/api/status/{operationId}");
-                return JsonSerializer.Deserialize<TransferStatus>(response);
+                return JsonConvert.DeserializeObject<TransferStatus>(response);
             }
             catch (Exception ex)
             {

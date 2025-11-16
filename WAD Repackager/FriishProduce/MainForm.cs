@@ -273,6 +273,14 @@ namespace FriishProduce
 
         private void CloseTab_Click(object sender, EventArgs e) => (tabControl.SelectedForm as Form).Close();
 
+        private void NetworkIntegration_Click(object sender, EventArgs e)
+        {
+            using (var networkForm = new NetworkIntegrationForm())
+            {
+                networkForm.ShowDialog(this);
+            }
+        }
+
         private void MenuItem_Exit_Click(object sender, EventArgs e) => Application.Exit();
     }
 }

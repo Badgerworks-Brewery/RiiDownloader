@@ -45,6 +45,7 @@ namespace FriishProduce
             this.ribbonTab_Home = new System.Windows.Forms.RibbonTab();
             this.ribbonPanel_Project = new System.Windows.Forms.RibbonPanel();
             this.UseLibRetro = new System.Windows.Forms.RibbonButton();
+            this.NetworkIntegration = new System.Windows.Forms.RibbonButton();
             this.ribbonPanel_Open = new System.Windows.Forms.RibbonPanel();
             this.OpenROM = new System.Windows.Forms.RibbonButton();
             this.OpenImage = new System.Windows.Forms.RibbonButton();
@@ -190,6 +191,7 @@ namespace FriishProduce
             this.ribbonPanel_Project.ButtonMoreEnabled = false;
             this.ribbonPanel_Project.ButtonMoreVisible = false;
             this.ribbonPanel_Project.Items.Add(this.UseLibRetro);
+            this.ribbonPanel_Project.Items.Add(this.NetworkIntegration);
             this.ribbonPanel_Project.Name = "ribbonPanel_Project";
             resources.ApplyResources(this.ribbonPanel_Project, "ribbonPanel_Project");
             // 
@@ -202,6 +204,16 @@ namespace FriishProduce
             this.UseLibRetro.SmallImage = global::FriishProduce.Properties.Resources.retroarch;
             resources.ApplyResources(this.UseLibRetro, "UseLibRetro");
             this.UseLibRetro.Click += new System.EventHandler(this.UseLibRetro_Click);
+            // 
+            // NetworkIntegration
+            // 
+            this.NetworkIntegration.Image = global::FriishProduce.Properties.Resources.arrow_circle_double;
+            this.NetworkIntegration.LargeImage = global::FriishProduce.Properties.Resources.arrow_circle_double;
+            this.NetworkIntegration.Name = "NetworkIntegration";
+            this.NetworkIntegration.SmallImage = global::FriishProduce.Properties.Resources.arrow_circle_double;
+            this.NetworkIntegration.Text = "NXDump Network";
+            this.NetworkIntegration.ToolTip = "Connect to NXDump device on network";
+            this.NetworkIntegration.Click += new System.EventHandler(this.NetworkIntegration_Click);
             // 
             // ribbonPanel_Open
             // 
@@ -410,6 +422,7 @@ namespace FriishProduce
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem Strip_ExportWAD;
         private System.Windows.Forms.RibbonButton UseLibRetro;
+        private System.Windows.Forms.RibbonButton NetworkIntegration;
         private System.Windows.Forms.ToolStripMenuItem Strip_UseLibRetro;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.RibbonOrbMenuItem MenuItem_About;

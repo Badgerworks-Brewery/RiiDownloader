@@ -17,6 +17,11 @@ namespace FriishProduce
             {
                 components.Dispose();
             }
+            if (disposing)
+            {
+                romInjector?.Dispose();
+                networkComm?.Dispose();
+            }
             base.Dispose(disposing);
         }
 
